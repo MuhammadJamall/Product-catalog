@@ -19,6 +19,7 @@ const products = [
 function App() {
   const [cart, setCart] = useState([]);
   const [message, setMessage] = useState("");
+  const [filterText, setFilterText] = useState(""); // ✅ NEW
 
   const showFeedback = (text) => {
     setMessage(text);
@@ -26,9 +27,7 @@ function App() {
   };
 
   const addToCart = (product) => {
-    if (cart.some((item) => item.id === product.id)) {
-      return;
-    }
+    if (cart.some((item) => item.id === product.id)) return;
     setCart((prev) => [...prev, product]);
     showFeedback(`Added "${product.name}" to cart!`);
   };
@@ -41,13 +40,17 @@ function App() {
     }
   };
 
-  // Clear cart
   const clearCart = () => {
     setCart([]);
     showFeedback("Cart cleared.");
   };
 
   const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+  // ✅ NEW: filtering logic (case-insensitive, partial match)
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(filterText.toLowerCase())
+  );
 
   return (
     <div className="app-layout">
@@ -70,7 +73,9 @@ function App() {
           <div className="empty-cart">
             <span className="empty-icon">🛍️</span>
             <p>Your cart is currently empty.</p>
-            <small>Browse items below and click "Add to Cart" to start shopping!</small>
+            <small>
+              Browse items below and click "Add to Cart" to start shopping!
+            </small>
           </div>
         ) : (
           <>
@@ -79,7 +84,9 @@ function App() {
                 <li key={item.id} className="cart-item">
                   <div className="cart-item-details">
                     <span className="cart-item-name">{item.name}</span>
-                    <span className="cart-item-unit-price">${item.price.toLocaleString()}</span>
+                    <span className="cart-item-unit-price">
+                      ${item.price.toLocaleString()}
+                    </span>
                   </div>
 
                   <div className="cart-item-controls">
@@ -94,10 +101,11 @@ function App() {
               ))}
             </ul>
 
-            {/* Total Price Highlight */}
             <div className="cart-total-banner">
               <span>Total Price:</span>
-              <span className="highlight-price">${total.toLocaleString()}</span>
+              <span className="highlight-price">
+                ${total.toLocaleString()}
+              </span>
             </div>
           </>
         )}
@@ -106,8 +114,22 @@ function App() {
       {/* Catalog Grid */}
       <section className="catalog-section">
         <h2>📱 Product Catalog</h2>
+
+        {/* ✅ NEW: search input */}
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={filterText}
+          onChange={(e) => setFilterText(e.target.value)}
+          style={{
+            marginBottom: "1rem",
+            padding: "0.5rem",
+            width: "100%",
+          }}
+        />
+
         <ProductList
-          products={products}
+          products={filteredProducts}
           cart={cart}
           onAddToCart={addToCart}
         />

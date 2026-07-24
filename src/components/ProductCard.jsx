@@ -13,11 +13,9 @@ export default function ProductCard({ id, name, price, inStock, isAdded, onAddTo
     <div className={`card ${!inStock ? "card-out-of-stock" : ""}`}>
       <div className="card-header">
         <h3>{name}</h3>
-        {inStock ? (
-          <span className="badge badge-stock">In Stock</span>
-        ) : (
-          <span className="badge badge-out">Out of Stock</span>
-        )}
+        <span className={`badge ${inStock ? "badge-stock" : "badge-out"}`}>
+          {inStock ? "In Stock" : "Out of Stock"}
+        </span>
       </div>
       <p className="card-price">${price.toLocaleString()}</p>
 
@@ -36,4 +34,4 @@ export default function ProductCard({ id, name, price, inStock, isAdded, onAddTo
 
 
 
-
+
