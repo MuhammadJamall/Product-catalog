@@ -1,15 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { selectRole, selectIsAuthenticated, selectEmail, logout } from "../store/authSlice";
-// Optional: import "./Header.css";  ← Add for styling
+import { selectRole, selectIsAuthenticated, selectEmail, logout } from "../store/authSlice"; // ✅ FIXED import
+import "./Navbar.css";
 
-function Header() {
+export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
+  // Get auth state from Redux
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const role = useSelector(selectRole);
-  const email = useSelector(selectEmail);
+  const email = useSelector(selectEmail); // ✅ FIXED: Simple and clean!
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
@@ -19,50 +20,59 @@ function Header() {
   };
 
   return (
-    <header className="navbar">
+    <nav className="navbar">
       <div className="nav-brand">
         <Link to="/" className="brand-link">
-          🛍️ Product & Task Manager
+          🛍️ Product Catalog
         </Link>
       </div>
 
+      {/* Navigation Links - Only show when authenticated */}
       {isAuthenticated && (
-        <nav className="nav-links">
+        <div className="nav-links">
           <Link to="/">🏠 Home</Link>
+          
+          {/* ROLE-BASED: Only show "Create Product" for manager/admin */}
           {(role === 'manager' || role === 'admin') && (
             <Link to="/products/new">➕ Create Product</Link>
           )}
+          
           <Link to="/tasks">📋 Tasks</Link>
-          {(role === 'manager' || role === 'admin') && (
-            <Link to="/tasks/new">➕ Create Task</Link>
-          )}
-        </nav>
+          <Link to="/tasks/new">➕ Create Task</Link>
+        </div>
       )}
 
+      {/* Auth Section - Right Side */}
       <div className="nav-auth">
         {isAuthenticated ? (
           <div className="user-info">
             <div className="user-details">
               <span className="user-email" title={email}>
-                👤 {email?.split('@')[0]}
+                👤 {email?.split('@')[0]} {/* Show only username part */}
               </span>
               <span className={`role-badge role-${role}`}>
                 {role?.toUpperCase()}
               </span>
             </div>
-            <button onClick={handleLogout} className="logout-btn">
+            <button 
+              onClick={handleLogout} 
+              className="logout-btn"
+              title="Click to logout"
+            >
               🚪 Logout
             </button>
           </div>
         ) : (
           <div className="auth-buttons">
-            <Link to="/login" className="login-link">🔐 Login</Link>
-            <Link to="/login?mode=register" className="register-link">📝 Sign Up</Link>
+            <Link to="/login" className="login-link">
+              🔐 Login
+            </Link>
+            <Link to="/login?mode=register" className="register-link">
+              📝 Sign Up
+            </Link>
           </div>
         )}
       </div>
-    </header>
+    </nav>
   );
 }
-
-export default Header;

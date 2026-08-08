@@ -1,10 +1,9 @@
 import ProductCard from "./ProductCard";
 
-export default function ProductList({ products, cart, onAddToCart }) {
+export default function ProductList({ products = [], cart = [], onAddToCart = () => {} }) {
   return (
     <div className="container">
       {products.map((product) => {
-        // Derive per-item added state
         const isAdded = cart.some((item) => item.id === product.id);
 
         return (
